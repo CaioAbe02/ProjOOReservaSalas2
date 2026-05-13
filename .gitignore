@@ -1,0 +1,11 @@
+bin/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VSCode
+.vscode/
+
+*.class
