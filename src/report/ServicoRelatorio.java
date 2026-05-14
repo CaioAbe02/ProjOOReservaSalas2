@@ -3,15 +3,12 @@ package report;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import model.Reserva;
 import observer.Observador;
 
-public class ServicoRelatorio implements Observador {
-
-    private static final SimpleDateFormat FMT = new SimpleDateFormat("dd/MM/yyyy");
+public abstract class ServicoRelatorio implements Observador {
+    protected static final SimpleDateFormat FMT = new SimpleDateFormat("dd/MM/yyyy");
 
     // push: dados chegam prontos via atualizar()
     @Override
@@ -22,31 +19,29 @@ public class ServicoRelatorio implements Observador {
             reserva.getStatus());
     }
 
-    // pull: recebe lista pré-filtrada e formata o relatório agrupado por sala
-    public void imprimirRelatorioDiario(List<ReservaDTO> reservas, Date data) {
-        System.out.println();
-        System.out.println("╔══════════════════════════════════════════════════════════════╗");
-        System.out.printf( "║       RELATÓRIO DIÁRIO DE RESERVAS — %s           ║%n", FMT.format(data));
-        System.out.println("╚══════════════════════════════════════════════════════════════╝");
+    // Template Method: define o esqueleto do relatório.
+    // Subclasses preenchem cada etapa sem alterar a ordem.
+    public final void imprimir(List<ReservaDTO> reservas, Date data) {
+        imprimirCabecalho(data);
 
         if (reservas.isEmpty()) {
-            System.out.println("  Nenhuma reserva confirmada para este dia.");
-            System.out.println();
+            imprimirVazio();
             return;
         }
 
-        Map<String, List<ReservaDTO>> porSala = reservas.stream()
-            .collect(Collectors.groupingBy(ReservaDTO::getNumeroSala));
+        imprimirCorpo(reservas);
+        imprimirRodape(reservas);
+    }
 
-        porSala.forEach((numeroSala, lista) -> {
-            String tipoSala = lista.get(0).getTipoSala();
-            System.out.printf("%n  ► Sala %s — %s (%d reserva(s))%n", numeroSala, tipoSala, lista.size());
-            System.out.println("  " + "─".repeat(60));
-            lista.forEach(r -> System.out.println(r));
-        });
+    protected abstract void imprimirCabecalho(Date data);
 
-        System.out.println();
-        System.out.printf("  Total de reservas confirmadas: %d%n", reservas.size());
+    protected abstract void imprimirCorpo(List<ReservaDTO> reservas);
+
+    protected abstract void imprimirRodape(List<ReservaDTO> reservas);
+
+    // Hook: comportamento padrão para listas vazias; subclasses podem sobrescrever.
+    protected void imprimirVazio() {
+        System.out.println("  Nenhuma reserva confirmada para o período.");
         System.out.println();
     }
 }
