@@ -20,7 +20,7 @@ public class RelatorioSemanal extends ServicoRelatorio {
 
         System.out.println();
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
-        System.out.printf( "║       RELATÓRIO SEMANAL DE RESERVAS — %s a %s                ║%n", FMT.format(inicioSemana), FMT.format(fimSemana));
+        System.out.printf( "║       RELATÓRIO SEMANAL DE RESERVAS — %s a %s║%n", FMT.format(inicioSemana), FMT.format(fimSemana));
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
     }
 
