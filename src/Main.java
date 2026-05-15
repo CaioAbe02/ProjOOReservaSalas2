@@ -19,6 +19,7 @@ import model.StatusReserva;
 import report.ReservaDTO;
 import report.RelatorioDiario;
 import report.RelatorioSemanal;
+import report.RelatorioMensal;
 import service.Resultado;
 import service.SistemaDeReservas;
 import singleton.Configuracao;
@@ -34,6 +35,7 @@ public class Main {
     private static final SistemaDeReservas sistema = SistemaDeReservas.getInstance();
     private static final RelatorioDiario relatorioDiario = new RelatorioDiario();
     private static final RelatorioSemanal relatorioSemanal = new RelatorioSemanal();
+    private static final RelatorioMensal relatorioMensal = new RelatorioMensal();
     private static final List<Pessoa> pessoas = new ArrayList<>();
     private static Pessoa usuarioLogado;
 
@@ -90,6 +92,7 @@ public class Main {
             System.out.println("  [4] Editar reserva");
             System.out.println("  [5] Relatório diário");
             System.out.println("  [6] Relatório semanal");
+            System.out.println("  [7] Relatório mensal");
             System.out.println("  [8] Configurações");
             System.out.println("  [9] Cadastrar pessoa");
             System.out.println("  [10] Trocar perfil");
@@ -103,6 +106,7 @@ public class Main {
                 case 4 -> fluxoEditarReserva();
                 case 5 -> fluxoRelatorioDiario();
                 case 6 -> fluxoRelatorioSemanal();
+                case 7 -> fluxoRelatorioMensal();
                 case 8 -> fluxoConfiguracoes();
                 case 9 -> { fluxoCadastrarPessoa(); }
                 case 10 -> { usuarioLogado = telaDeLogin(); }
@@ -256,6 +260,25 @@ public class Main {
             .collect(Collectors.toList());
 
         relatorioSemanal.imprimir(dtos, dia);
+    }
+
+    private static void fluxoRelatorioMensal() {
+        cabecalho("RELATÓRIO MENSAL");
+        Date dia = lerData("Uma data do mês do relatório");
+
+        List<Reserva> reservasDoDia = sistema.relatorioMensal(dia);
+        List<ReservaDTO> dtos = reservasDoDia.stream()
+            .map(r -> new ReservaDTO(
+                r.getPessoa().getNome(),
+                r.getPessoa().getClass().getSimpleName(),
+                r.getSala().getClass().getSimpleName(),
+                r.getSala().getNumero(),
+                r.getDia(),
+                r.getStatus()
+            ))
+            .collect(Collectors.toList());
+
+        relatorioMensal.imprimir(dtos, dia);
     }
 
     private static void fluxoConfiguracoes() {

@@ -11,7 +11,7 @@ public class RelatorioDiario extends ServicoRelatorio {
     protected void imprimirCabecalho(Date data) {
         System.out.println();
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
-        System.out.printf( "║       RELATÓRIO DIÁRIO DE RESERVAS — %s           ║%n", FMT.format(data));
+        System.out.printf( "║       RELATÓRIO DIÁRIO DE RESERVAS - %s           ║%n", FMT.format(data));
         System.out.println("╚══════════════════════════════════════════════════════════════╝");
     }
 
@@ -28,7 +28,7 @@ public class RelatorioDiario extends ServicoRelatorio {
 
         porSala.forEach((numeroSala, lista) -> {
             String tipoSala = lista.get(0).getTipoSala();
-            System.out.printf("%n  ► Sala %s — %s (%d reserva(s))%n", numeroSala, tipoSala, lista.size());
+            System.out.printf("%n  > Sala %s - %s (%d reserva(s))%n", numeroSala, tipoSala, lista.size());
             System.out.println("  " + "─".repeat(60));
             lista.forEach(r -> System.out.println(r));
         });

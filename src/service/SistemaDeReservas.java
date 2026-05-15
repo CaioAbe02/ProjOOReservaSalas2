@@ -134,6 +134,27 @@ public class SistemaDeReservas {
         return relatorio;
     }
 
+    public List<Reserva> relatorioMensal(Date data) {
+        List<Reserva> relatorio = new ArrayList<>();
+
+        Calendar calendario = Calendar.getInstance();
+        calendario.setTime(data);
+        calendario.set(Calendar.DAY_OF_MONTH, 1);
+        Date inicioMes = calendario.getTime();
+
+        calendario.set(Calendar.DAY_OF_MONTH, calendario.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date fimMes = calendario.getTime();
+
+        for (Reserva reserva : reservas) {
+            Date dia = reserva.getDia();
+            if (!dia.before(inicioMes) && !dia.after(fimMes)) {
+                relatorio.add(reserva);
+            }
+        }
+        relatorio.sort(Comparator.comparing(r -> r.getSala().getNumero()));
+        return relatorio;
+    }
+
     private Reserva achaReserva(Sala sala, Date data) {
         for (Reserva reserva : reservas) {
             if (reserva.getSala().equals(sala) && reserva.getDia().equals(data)) {
