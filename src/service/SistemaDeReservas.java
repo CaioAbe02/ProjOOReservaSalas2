@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
 
 import model.Pessoa;
 import model.Reserva;
@@ -105,6 +106,27 @@ public class SistemaDeReservas {
         List<Reserva> relatorio = new ArrayList<>();
         for (Reserva reserva : reservas) {
             if (reserva.getDia().equals(data)) {
+                relatorio.add(reserva);
+            }
+        }
+        relatorio.sort(Comparator.comparing(r -> r.getSala().getNumero()));
+        return relatorio;
+    }
+
+    public List<Reserva> relatorioSemanal(Date data) {
+        List<Reserva> relatorio = new ArrayList<>();
+
+        Calendar calendario = Calendar.getInstance();
+        calendario.setTime(data);
+        calendario.set(Calendar.DAY_OF_WEEK, calendario.getFirstDayOfWeek());
+        Date inicioSemana = calendario.getTime();
+
+        calendario.add(Calendar.DAY_OF_WEEK, 6);
+        Date fimSemana = calendario.getTime();
+
+        for (Reserva reserva : reservas) {
+            Date dia = reserva.getDia();
+            if (!dia.before(inicioSemana) && !dia.after(fimSemana)) {
                 relatorio.add(reserva);
             }
         }

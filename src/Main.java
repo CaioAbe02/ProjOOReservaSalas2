@@ -17,7 +17,8 @@ import model.Reserva;
 import model.Sala;
 import model.StatusReserva;
 import report.ReservaDTO;
-import report.ServicoRelatorio;
+import report.RelatorioDiario;
+import report.RelatorioSemanal;
 import service.Resultado;
 import service.SistemaDeReservas;
 import singleton.Configuracao;
@@ -31,7 +32,8 @@ public class Main {
     private static final Scanner sc = new Scanner(System.in);
     private static final SimpleDateFormat FMT = new SimpleDateFormat("dd/MM/yyyy");
     private static final SistemaDeReservas sistema = SistemaDeReservas.getInstance();
-    private static final ServicoRelatorio relatorio = new ServicoRelatorio();
+    private static final RelatorioDiario relatorioDiario = new RelatorioDiario();
+    private static final RelatorioSemanal relatorioSemanal = new RelatorioSemanal();
     private static final List<Pessoa> pessoas = new ArrayList<>();
     private static Pessoa usuarioLogado;
 
@@ -87,9 +89,10 @@ public class Main {
             System.out.println("  [3] Cancelar reserva");
             System.out.println("  [4] Editar reserva");
             System.out.println("  [5] Relatório diário");
-            System.out.println("  [6] Configurações");
-            System.out.println("  [7] Cadastrar pessoa");
-            System.out.println("  [8] Trocar perfil");
+            System.out.println("  [6] Relatório semanal");
+            System.out.println("  [8] Configurações");
+            System.out.println("  [9] Cadastrar pessoa");
+            System.out.println("  [10] Trocar perfil");
             System.out.println("  [0] Sair");
             System.out.println();
 
@@ -98,10 +101,11 @@ public class Main {
                 case 2 -> fluxoFazerReserva();
                 case 3 -> fluxoCancelarReserva();
                 case 4 -> fluxoEditarReserva();
-                case 5 -> fluxoRelatorio();
-                case 6 -> fluxoConfiguracoes();
-                case 7 -> { fluxoCadastrarPessoa(); }
-                case 8 -> { usuarioLogado = telaDeLogin(); }
+                case 5 -> fluxoRelatorioDiario();
+                case 6 -> fluxoRelatorioSemanal();
+                case 8 -> fluxoConfiguracoes();
+                case 9 -> { fluxoCadastrarPessoa(); }
+                case 10 -> { usuarioLogado = telaDeLogin(); }
                 case 0 -> { System.out.println("Encerrando. Até logo!"); return; }
                 default -> System.out.println("Opção inválida.");
             }
@@ -216,7 +220,7 @@ public class Main {
         }
     }
 
-    private static void fluxoRelatorio() {
+    private static void fluxoRelatorioDiario() {
         cabecalho("RELATÓRIO DIÁRIO");
         Date dia = lerData("Data do relatório");
 
@@ -232,7 +236,26 @@ public class Main {
             ))
             .collect(Collectors.toList());
 
-        relatorio.imprimirRelatorioDiario(dtos, dia);
+        relatorioDiario.imprimir(dtos, dia);
+    }
+
+    private static void fluxoRelatorioSemanal() {
+        cabecalho("RELATÓRIO SEMANAL");
+        Date dia = lerData("Uma data da semana do relatório");
+
+        List<Reserva> reservasDoDia = sistema.relatorioSemanal(dia);
+        List<ReservaDTO> dtos = reservasDoDia.stream()
+            .map(r -> new ReservaDTO(
+                r.getPessoa().getNome(),
+                r.getPessoa().getClass().getSimpleName(),
+                r.getSala().getClass().getSimpleName(),
+                r.getSala().getNumero(),
+                r.getDia(),
+                r.getStatus()
+            ))
+            .collect(Collectors.toList());
+
+        relatorioSemanal.imprimir(dtos, dia);
     }
 
     private static void fluxoConfiguracoes() {
